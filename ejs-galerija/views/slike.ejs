@@ -2,18 +2,43 @@
 <html lang="hr">
 <head>
   <meta charset="UTF-8">
-  <title>Galerija slika</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="keywords" content="HTML, CSS">
   <link rel="stylesheet" href="/style/style.css">
+  <link rel="stylesheet" href="/style/style_slike.css">
+  <title>Weather Data</title> 
 </head>
 <body>
-  <h1>Galerija slika</h1>
-  <section class="gallery">
-    <% images.forEach(image => { %>
-      <figure id="<%= image.id %>">
-        <img src="<%= image.url %>" alt="<%= image.title %>">
-        <figcaption><%= image.title %></figcaption>
+  <header>
+    <h1>Weather Data Collection</h1>
+  </header>
+
+  <nav aria-labelledby="navigacija" class="menu-container">
+    <div class="menu-button">Menu</div>
+    <ul class="nav-menu">
+      <li><a href="/">Home</a></li>
+      <li><a href="/pages/graph.html">Graph</a></li>
+      <li><a href="/slike">Gallery</a></li>
+    </ul>
+    <h1 id="weather-h1">Weather data</h1>
+  </nav>
+
+  <section class="galerija"> 
+    <% images.forEach((image, index) => { %>
+      <figure class="galerija_slika">
+        <a href="#img<%= index + 1 %>">
+          <img src="<%= image.thumb %>" alt="Slika <%= index + 1 %>" loading="lazy">
+        </a>
+        <figcaption>Slika <%= index + 1 %></figcaption>
       </figure>
-    <% }); %>
+
+      <div id="img<%= index + 1 %>" class="modal">
+        <div class="modal-content">
+          <a href="#" class="close">&times;</a>
+          <img src="<%= image.full %>" alt="Slika <%= index + 1 %>" loading="lazy">
+        </div>
+      </div>
+    <% }) %>
   </section>
 </body>
 </html>
