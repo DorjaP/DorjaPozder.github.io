@@ -26,19 +26,44 @@
   <section class="galerija"> 
     <% images.forEach((image, index) => { %>
       <figure class="galerija_slika">
-        <a href="#img<%= index + 1 %>">
-          <img src="<%= image.thumb %>" alt="Slika <%= index + 1 %>" loading="lazy">
+        <a href="javascript:void(0);" onclick="openLightbox(<%= index %>)">
+          <img src="<%= image.url %>" alt="Slika <%= index + 1 %>" loading="lazy">
         </a>
         <figcaption>Slika <%= index + 1 %></figcaption>
       </figure>
-
-      <div id="img<%= index + 1 %>" class="modal">
-        <div class="modal-content">
-          <a href="#" class="close">&times;</a>
-          <img src="<%= image.full %>" alt="Slika <%= index + 1 %>" loading="lazy">
-        </div>
-      </div>
     <% }) %>
   </section>
+
+  <!-- Lightbox Modal -->
+  <div id="lightbox" class="lightbox-overlay">
+    <span class="close-btn" onclick="closeLightbox()">&times;</span>
+    <img id="lightbox-img" src="" alt="Lightbox Image">
+  </div>
+
+  <script>
+    // Convert the images array to a JavaScript object using JSON.stringify() and inject it into the script
+    const images = <%- JSON.stringify(images) %>;
+  
+    // Open the lightbox with the selected image
+    function openLightbox(index) {
+    const images = <%- JSON.stringify(images) %>; // Get the images array
+    const lightboxImg = document.getElementById("lightbox-img");
+    lightboxImg.src = images[index].url;
+    document.getElementById("lightbox").style.display = "block";
+}
+
+function closeLightbox() {
+    document.getElementById("lightbox").style.display = "none";
+}
+
+// Close lightbox if the background is clicked
+document.getElementById('lightbox').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeLightbox();
+    }
+});
+  </script>
+  
+
 </body>
 </html>
