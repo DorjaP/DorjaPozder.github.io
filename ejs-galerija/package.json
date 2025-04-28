@@ -1,5 +1,5 @@
 {
-  "name": "dorjapozder.github.io",
+  "name": "weather-app",
   "version": "1.0.0",
   "description": "Express app for CSV parsing and rendering with EJS",
   "main": "server.js",
