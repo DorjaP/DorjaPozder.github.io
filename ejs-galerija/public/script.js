@@ -3,54 +3,80 @@ let allWeatherData = []; // Store CSV data
 // Fetch and display CSV data
 window.addEventListener('DOMContentLoaded', function() {
     fetch('/weather_Small.csv')
-        .then(response => response.text())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.text();
+        })
         .then(csvText => {
+            if (!csvText.trim()) {
+                console.error('CSV file is empty');
+                displayWeather([]);
+                return;
+            }
+
+            console.log('Raw CSV Content (first 200 chars):', csvText.substring(0, 200));
+
             const data = Papa.parse(csvText, {
                 header: true,
                 skipEmptyLines: true,
-                dynamicTyping: false // Keep values as strings initially
-            }).data;
+                dynamicTyping: true // Let PapaParse convert numbers automatically
+            });
 
-            console.log('Raw CSV Data (first 3 rows):', data.slice(0, 3)); // Log first 3 rows for debugging
-            console.log('CSV Headers:', Object.keys(data[0])); // Log column names
+            if (!data.data || data.data.length === 0) {
+                console.error('No data parsed from CSV. Errors:', data.errors);
+                displayWeather([]);
+                return;
+            }
 
-            allWeatherData = data.map((row, index) => {
-                // Clean and convert numeric fields
-                const cleanNumber = (value, field, rowIndex) => {
+            console.log('Raw CSV Data (first 3 rows):', data.data.slice(0, 3));
+            console.log('CSV Headers:', Object.keys(data.data[0]));
+
+            allWeatherData = data.data.map((row, index) => {
+                // Clean and convert fields
+                const cleanValue = (value, field, rowIndex, defaultValue = 'N/A') => {
                     if (value === null || value === undefined || value === '') {
                         console.warn(`Empty value for ${field} at row ${rowIndex + 2}`);
-                        return 0; // Default to 0 for empty values
+                        return defaultValue;
                     }
-                    // Convert to string, remove quotes/spaces, and parse as number
-                    const cleaned = String(value).replace(/['"]+/g, '').trim();
-                    const number = Number(cleaned);
-                    if (isNaN(number)) {
-                        console.warn(`Invalid number for ${field} at row ${rowIndex + 2}: "${cleaned}" (raw: "${value}")`);
-                        return 0; // Default to 0 for invalid numbers
-                    }
-                    return number;
+                    return value;
                 };
 
-                // Map row data
+                const cleanNumber = (value, field, rowIndex) => {
+                    const cleaned = cleanValue(value, field, rowIndex, 0);
+                    if (typeof cleaned === 'number' && !isNaN(cleaned)) {
+                        return cleaned;
+                    }
+                    console.warn(`Invalid number for ${field} at row ${rowIndex + 2}: "${cleaned}"`);
+                    return 0;
+                };
+
                 return {
-                    temperature: cleanNumber(row['Temperature'], 'Temperature (°C)', index),
+                    rowId: `row_${index}_${Date.now()}`, // Unique ID for cart
+                    temperature: cleanNumber(row['Temperature'], 'Temperature', index),
                     humidity: cleanNumber(row['Humidity'], 'Humidity', index),
-                    windSpeed: cleanNumber(row['Wind Speed'], 'Wind Speed (km/h)', index),
-                    precipitation: cleanNumber(row['Precipitation (%)'], 'Precipitation', index),
-                    cloudCover: row['Cloud Cover'] || 'N/A',
+                    windSpeed: cleanNumber(row['Wind Speed'], 'Wind Speed', index),
+                    precipitation: cleanNumber(row['Precipitation (%)'], 'Precipitation (%)', index),
+                    cloudCover: cleanValue(row['Cloud Cover'], 'Cloud Cover', index),
                     pressure: cleanNumber(row['Atmospheric Pressure'], 'Atmospheric Pressure', index),
                     uvIndex: cleanNumber(row['UV Index'], 'UV Index', index),
-                    season: row['Season'] || 'N/A',
+                    season: cleanValue(row['Season'], 'Season', index),
                     visibility: cleanNumber(row['Visibility (km)'], 'Visibility (km)', index),
-                    location: row['Location'] || 'N/A',
-                    weatherType: row['Weather Type'] || 'N/A'
+                    location: cleanValue(row['Location'], 'Location', index),
+                    weatherType: cleanValue(row['Weather Type'], 'Weather Type', index)
                 };
             });
 
-            console.log('Parsed Weather Data (first 3 rows):', allWeatherData.slice(0, 3)); // Log parsed data
+            console.log('Parsed Weather Data (first 3 rows):', allWeatherData.slice(0, 3));
+            console.log('Total Rows Parsed:', allWeatherData.length);
+
             displayWeather(allWeatherData.slice(0, 15)); // Display first 15 rows
         })
-        .catch(error => console.error('Error loading CSV:', error));
+        .catch(error => {
+            console.error('Error loading CSV:', error);
+            displayWeather([]);
+        });
 
     // Apply filters on button click
     document.getElementById('apply-filters').addEventListener('click', filterWeather);
@@ -61,10 +87,10 @@ function displayWeather(data) {
     const tbody = document.querySelector('#dynamic-weather-table tbody');
     tbody.innerHTML = '';
     if (data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="11">Nema podataka za odabrane filtre.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="12">Nema podataka za odabrane filtre ili CSV nije učitan.</td></tr>';
         return;
     }
-    data.forEach(row => {
+    data.forEach((row, index) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${row.temperature}</td>
@@ -78,6 +104,7 @@ function displayWeather(data) {
             <td>${row.visibility}</td>
             <td>${row.location}</td>
             <td>${row.weatherType}</td>
+            <td><button onclick="dodajUKosaricu(${index})">+</button></td>
         `;
         tbody.appendChild(tr);
     });
@@ -96,5 +123,20 @@ function filterWeather() {
         return seasonMatch && locationMatch && weatherTypeMatch;
     });
 
+    console.log('Filtered Data (first 3 rows):', filteredData.slice(0, 3));
+    console.log('Filtered Rows:', filteredData.length);
     displayWeather(filteredData.slice(0, 15)); // Display first 15 rows of filtered data
+}
+
+// Add to cart
+function dodajUKosaricu(index) {
+    const day = allWeatherData[index];  // Get the correct object
+    let kosarica = JSON.parse(localStorage.getItem('kosarica')) || [];
+    if (!kosarica.some(item => item.rowId === day.rowId)) {
+        kosarica.push(day);
+        localStorage.setItem('kosarica', JSON.stringify(kosarica));
+        alert('Dan dodan u košaricu!');
+    } else {
+        alert('Dan je već u košarici!');
+    }
 }

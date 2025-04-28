@@ -17,6 +17,7 @@
         <div class="menu-button">Menu</div>
         <ul class="nav-menu">
             <li><a href="/">Home</a></li>
+            <li><a href="/pages/cart.html">Cart</a></li>
             <li><a href="/pages/graph.html">Graph</a></li>
             <li><a href="/slike">Gallery</a></li>
         </ul>
@@ -57,7 +58,7 @@
             <tr><td>26</td><td>90</td><td>26</td><td>88</td><td>partly cloudy</td><td>998.97</td><td>4</td><td>Summer</td><td>2.5</td><td>coastal</td><td>Rainy</td></tr>
             <tr><td>26</td><td>67</td><td>11</td><td>74</td><td>overcast</td><td>993.37</td><td>1</td><td>Spring</td><td>1.5</td><td>inland</td><td>Rainy</td></tr>
         </table>
-		<aside class="sidebar">
+        <aside class="sidebar">
             <h2>Weather Image</h2>
             <picture>
                 <source srcset="/images/forecast.jpeg" media="(min-width: 769px)">
@@ -68,55 +69,54 @@
         </aside>
     </div>
 
-        <!-- Filters for Dynamic Table -->
-        <div id="filters">
-            <h2>Filter Dynamic Table</h2>
-            <select id="filter-season">
-                <option value="">-- Odaberi sezonu --</option>
-                <option value="Spring">Spring</option>
-                <option value="Summer">Summer</option>
-                <option value="Autumn">Autumn</option>
-                <option value="Winter">Winter</option>
-            </select>
-            <select id="filter-location">
-                <option value="">-- Odaberi lokaciju --</option>
-                <option value="inland">Inland</option>
-                <option value="mountain">Mountain</option>
-                <option value="coastal">Coastal</option>
-            </select>
-            <select id="filter-weather-type">
-                <option value="">-- Odaberi tip vremena --</option>
-                <option value="Sunny">Sunny</option>
-                <option value="Rainy">Rainy</option>
-                <option value="Cloudy">Cloudy</option>
-            </select>
-            <button id="apply-filters">Filtriraj</button>
-        </div>
+    <!-- Filters for Dynamic Table -->
+    <div id="filters">
+        <h2>Filter Dynamic Table</h2>
+        <select id="filter-season">
+            <option value="">-- Odaberi sezonu --</option>
+            <option value="Spring">Spring</option>
+            <option value="Summer">Summer</option>
+            <option value="Autumn">Autumn</option>
+            <option value="Winter">Winter</option>
+        </select>
+        <select id="filter-location">
+            <option value="">-- Odaberi lokaciju --</option>
+            <option value="inland">Inland</option>
+            <option value="mountain">Mountain</option>
+            <option value="coastal">Coastal</option>
+        </select>
+        <select id="filter-weather-type">
+            <option value="">-- Odaberi tip vremena --</option>
+            <option value="Sunny">Sunny</option>
+            <option value="Rainy">Rainy</option>
+            <option value="Cloudy">Cloudy</option>
+        </select>
+        <button id="apply-filters">Filtriraj</button>
+    </div>
 
-        <!-- Dynamic Table -->
-        <div id="table-container">
-            <h2>Dynamic Weather Data</h2>
-            <table id="dynamic-weather-table">
-                <thead>
-                    <tr>
-                        <th>Temperature (°C)</th>
-                        <th>Humidity (%)</th>
-                        <th>Wind Speed (km/h)</th>
-                        <th>Precipitation (%)</th>
-                        <th>Cloud Cover</th>
-                        <th>Atmospheric Pressure</th>
-                        <th>UV Index</th>
-                        <th>Season</th>
-                        <th>Visibility (km)</th>
-                        <th>Location</th>
-                        <th>Weather Type</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
-
-
+    <!-- Dynamic Table -->
+    <div id="table-container">
+        <h2>Dynamic Weather Data</h2>
+        <table id="dynamic-weather-table">
+            <thead>
+                <tr>
+                    <th>Temperature (°C)</th>
+                    <th>Humidity (%)</th>
+                    <th>Wind Speed (km/h)</th>
+                    <th>Precipitation (%)</th>
+                    <th>Cloud Cover</th>
+                    <th>Atmospheric Pressure</th>
+                    <th>UV Index</th>
+                    <th>Season</th>
+                    <th>Visibility (km)</th>
+                    <th>Location</th>
+                    <th>Weather Type</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
 
     <section>
         <h2>Ovo je glavna sekcija</h2>
@@ -134,6 +134,6 @@
         <p>© 2025. Web Programiranje. Sva prava pridržana.</p>
     </footer>
 
-    <script src="/script.js" defer></script>
+    <script src="script.js" defer></script>
 </body>
 </html>
